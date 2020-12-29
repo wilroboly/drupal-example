@@ -101,7 +101,10 @@ services:
       << : *default-environment
 
   solr:
-    image: amazeeio/solr:6.6-drupal
+    image: amazeeio/solr:7.7-drupal
+    # build:
+    #   context: .
+    #   dockerfile: lagoon/solr.dockerfile    
     labels:
       lagoon.type: solr
     ports:
