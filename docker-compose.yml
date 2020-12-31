@@ -19,6 +19,7 @@ x-environment:
     #LAGOON_ENVIRONMENT_TYPE: production
     # Uncomment to enable xdebug and then restart via `docker-compose up -d`
     #XDEBUG_ENABLE: "true"
+    PHP_MEMORY_LIMIT: 512M
 
 x-user:
   &default-user
@@ -101,7 +102,7 @@ services:
       << : *default-environment
 
   solr:
-    image: amazeeio/solr:7.7-drupal
+    image: amazeeio/solr:6.6-drupal-latest
     # build:
     #   context: .
     #   dockerfile: lagoon/solr.dockerfile    
