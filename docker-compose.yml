@@ -2,7 +2,7 @@ version: '2.3'
 
 x-lagoon-project:
   # Lagoon project name (leave `&lagoon-project` when you edit this)
-  &lagoon-project drupal-example
+  &lagoon-project drupal-solr7
 
 x-volumes:
   &default-volumes
@@ -14,7 +14,7 @@ x-environment:
   &default-environment
     LAGOON_PROJECT: *lagoon-project
     # Route that should be used locally, if you are using pygmy, this route *must* end with .docker.amazee.io
-    LAGOON_ROUTE: http://drupal-example.docker.amazee.io
+    LAGOON_ROUTE: http://drupal-solr7.docker.amazee.io
     # Uncomment if you like to have the system behave like in production
     #LAGOON_ENVIRONMENT_TYPE: production
     # Uncomment to enable xdebug and then restart via `docker-compose up -d`
@@ -60,7 +60,7 @@ services:
       - cli # basically just tells docker-compose to build the cli first
     environment:
       << : *default-environment # loads the defined environment variables from the top
-      LAGOON_LOCALDEV_URL: nginx-drupal-example.docker.amazee.io # generate another route for nginx, by default we go to varnish
+      LAGOON_LOCALDEV_URL: nginx-drupal-solr7.docker.amazee.io # generate another route for nginx, by default we go to varnish
     networks:
       - amazeeio-network
       - default
@@ -82,7 +82,6 @@ services:
     environment:
       << : *default-environment # loads the defined environment variables from the top
 
-
   mariadb:
     image: amazeeio/mariadb-drupal
     labels:
@@ -102,16 +101,33 @@ services:
       << : *default-environment
 
   solr:
-    image: amazeeio/solr:6.6-drupal-latest
-    # build:
-    #   context: .
-    #   dockerfile: lagoon/solr.dockerfile    
+    # image: amazeeio/solr:7.7-drupal-latest
+    build:
+      context: .
+      dockerfile: ./lagoon/solr/7/solr.dockerfile    
     labels:
       lagoon.type: solr
     ports:
       - "8983" # exposes the port 8983 with a random local port, find it with `docker-compose port solr 8983`
     environment:
       << : *default-environment
+    volumes:
+      # - ./lagoon/solr/7/solr-conf/:/solr-conf/conf/
+      - data7:/var/solr
+
+  # solr8:
+  #   build:
+  #     context: .
+  #     dockerfile: lagoon/solr/8/solr.dockerfile    
+  #   labels:
+  #     lagoon.type: solr
+  #   ports:
+  #     - "8983" # exposes the port 8983 with a random local port, find it with `docker-compose port solr 8983`
+  #   environment:
+  #     << : *default-environment
+  #   volumes:
+  #     # - ./lagoon/solr/7/solr-conf/:/solr-conf/conf/
+  #     - data8:/var/solr
 
 
   varnish:
@@ -131,3 +147,7 @@ services:
 networks:
   amazeeio-network:
     external: true
+
+volumes:
+  data7:
+  # data8:
